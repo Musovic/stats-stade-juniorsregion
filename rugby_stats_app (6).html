@@ -1,10 +1,7 @@
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-    <!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Stats Rugby - Juniors Régionaux</title>
@@ -508,6 +505,19 @@
             color: #dc3545;
             font-weight: bold;
         }
+
+        @media print {
+            body {
+                background: white;
+            }
+            .header, .tabs, .btn {
+                display: none !important;
+            }
+            .content {
+                box-shadow: none;
+                border: none;
+            }
+        }
     </style>
 </head>
 <body>
@@ -531,10 +541,9 @@
         </div>
 
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('joueurs')">Joueurs</button>
-            <button class="tab" onclick="switchTab('composition')">Composition</button>
-            <button class="tab" onclick="switchTab('matchs')">Matchs</button>
-            <button class="tab" onclick="switchTab('statistiques')">Statistiques Globales</button>
+            <button class="tab active" onclick="switchTab(event, 'joueurs')">Joueurs</button>
+            <button class="tab" onclick="switchTab(event, 'matchs')">Matchs</button>
+            <button class="tab" onclick="switchTab(event, 'statistiques')">Statistiques Globales</button>
         </div>
 
         <div class="content">
@@ -547,132 +556,8 @@
                 </div>
                 
                 <h3 style="margin-top: 40px; color: #dc3545;">Liste des joueurs (par ordre alphabétique)</h3>
+                <input type="text" id="playerSearch" placeholder="🔍 Rechercher un joueur..." style="width: 100%; padding: 12px; margin-bottom: 20px; border: 2px solid #dc3545; border-radius: 8px; font-size: 16px;" oninput="filterPlayers()">
                 <div class="player-stats-list" id="playersStatsList"></div>
-            </div>
-
-            <!-- Onglet Composition -->
-            <div class="tab-content" id="composition">
-                <h2 style="color: #dc3545;">Composition de l'équipe</h2>
-                <div class="rugby-field">
-                    <h3 style="color: #333; text-align: center; margin-bottom: 20px;">Terrain</h3>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>15 - Arrière</strong>
-                            <select id="pos15" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>11 - Ailier</strong>
-                            <select id="pos11" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>14 - Ailier</strong>
-                            <select id="pos14" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>12 - Centre</strong>
-                            <select id="pos12" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>13 - Centre</strong>
-                            <select id="pos13" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>9 - Demi de mêlée</strong>
-                            <select id="pos9" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>10 - Demi d'ouverture</strong>
-                            <select id="pos10" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>6 - 3ème ligne</strong>
-                            <select id="pos6" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>7 - 3ème ligne</strong>
-                            <select id="pos7" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>8 - 3ème ligne</strong>
-                            <select id="pos8" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>4 - 2ème ligne</strong>
-                            <select id="pos4" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>5 - 2ème ligne</strong>
-                            <select id="pos5" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                    
-                    <div class="field-row">
-                        <div class="position-slot">
-                            <strong>1 - Pilier</strong>
-                            <select id="pos1" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>2 - Talonneur</strong>
-                            <select id="pos2" onchange="saveComposition()"></select>
-                        </div>
-                        <div class="position-slot">
-                            <strong>3 - Pilier</strong>
-                            <select id="pos3" onchange="saveComposition()"></select>
-                        </div>
-                    </div>
-                </div>
-                
-                <h3 style="margin-top: 30px; color: #dc3545;">Remplaçants</h3>
-                <div id="remplacants" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 20px;">
-                    <div class="position-slot">
-                        <strong>16 - Remplaçant</strong>
-                        <select id="pos16" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>17 - Remplaçant</strong>
-                        <select id="pos17" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>18 - Remplaçant</strong>
-                        <select id="pos18" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>19 - Remplaçant</strong>
-                        <select id="pos19" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>20 - Remplaçant</strong>
-                        <select id="pos20" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>21 - Remplaçant</strong>
-                        <select id="pos21" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>22 - Remplaçant</strong>
-                        <select id="pos22" onchange="saveComposition()"></select>
-                    </div>
-                    <div class="position-slot">
-                        <strong>23 - Remplaçant</strong>
-                        <select id="pos23" onchange="saveComposition()"></select>
-                    </div>
-                </div>
             </div>
 
             <!-- Onglet Matchs -->
@@ -683,13 +568,15 @@
                         <input type="text" id="adversaire" placeholder="Équipe adverse" />
                         <input type="date" id="matchDate" />
                         <input type="text" id="lieu" placeholder="Lieu du match" />
-                        <button class="btn" onclick="createMatch()">Créer un nouveau match</button>
+                        <button class="btn" onclick="showCompositionModal()">Créer un nouveau match</button>
                     </div>
                     <div class="matches-list" id="matchesList"></div>
                 </div>
 
                 <div id="matchLive" style="display: none;">
                     <button class="btn" onclick="backToMatches()" style="margin-bottom: 20px;">← Retour aux matchs</button>
+                    <button class="btn" onclick="showCompositionModal()" style="margin-bottom: 20px; margin-left: 10px; background: #17a2b8;">👥 Modifier la composition</button>
+                    <button class="btn" onclick="showMatchPlayersNumbers()" style="margin-bottom: 20px; margin-left: 10px; background: #ffc107; color: #333;">🔢 Modifier les numéros</button>
                     <div class="match-live">
                         <div class="scoreboard">
                             <h2 id="matchTitle"></h2>
@@ -699,7 +586,30 @@
                                 <button class="timer-btn" onclick="pauseTimer()">⏸ Pause</button>
                                 <button class="timer-btn" onclick="resetTimer()">↺ Reset</button>
                             </div>
-                            <div class="score-display" id="scoreDisplay">0</div>
+                            <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px; flex-wrap: wrap;">
+                                <button class="timer-btn" onclick="adjustTimer(-60)" style="background: #ffc107; color: #333;">-1 min</button>
+                                <button class="timer-btn" onclick="adjustTimer(-10)" style="background: #ffc107; color: #333;">-10 sec</button>
+                                <button class="timer-btn" onclick="adjustTimer(10)" style="background: #28a745; color: white;">+10 sec</button>
+                                <button class="timer-btn" onclick="adjustTimer(60)" style="background: #28a745; color: white;">+1 min</button>
+                                <button class="timer-btn" onclick="adjustTimer(300)" style="background: #28a745; color: white;">+5 min</button>
+                            </div>
+                            <div style="display: flex; justify-content: space-around; align-items: center; margin-top: 30px;">
+                                <div>
+                                    <p style="font-size: 18px; margin-bottom: 10px;">Notre score</p>
+                                    <div class="score-display" id="scoreDisplay">0</div>
+                                </div>
+                                <div style="font-size: 48px; font-weight: bold;">-</div>
+                                <div>
+                                    <p style="font-size: 18px; margin-bottom: 10px;" id="adversaryName">Adversaire</p>
+                                    <div class="score-display" id="adversaryScore">0</div>
+                                    <div style="display: flex; gap: 10px; justify-content: center; margin-top: 15px;">
+                                        <button class="timer-btn" onclick="addAdversaryScore(5)" style="background: #28a745; color: white;">+5</button>
+                                        <button class="timer-btn" onclick="addAdversaryScore(3)" style="background: #ffc107; color: #333;">+3</button>
+                                        <button class="timer-btn" onclick="addAdversaryScore(2)" style="background: #17a2b8; color: white;">+2</button>
+                                        <button class="timer-btn" onclick="addAdversaryScore(-1)" style="background: #dc3545; color: white;">-1</button>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="score-actions">
@@ -743,7 +653,27 @@
                 <div id="matchDebrief" style="display: none;">
                     <button class="btn" onclick="backToMatches()" style="margin-bottom: 20px;">← Retour aux matchs</button>
                     <button class="btn" onclick="exportToPDF()" style="margin-bottom: 20px; margin-left: 10px; background: #28a745;">📄 Exporter en PDF</button>
+                    <button class="btn" onclick="openPostMatchStats()" style="margin-bottom: 20px; margin-left: 10px; background: #17a2b8;">📊 Ajouter des statistiques</button>
+                    <button class="btn" onclick="showMatchPlayersNumbers()" style="margin-bottom: 20px; margin-left: 10px; background: #ffc107; color: #333;">🔢 Modifier les numéros</button>
                     <h2 id="debriefTitle" style="color: #dc3545;"></h2>
+                    
+                    <div style="background: linear-gradient(135deg, #1e3c72, #2a5298); color: white; padding: 30px; border-radius: 15px; margin-bottom: 30px; text-align: center;">
+                        <h3 style="margin-bottom: 20px;">Score final</h3>
+                        <div style="display: flex; justify-content: space-around; align-items: center;">
+                            <div>
+                                <p style="font-size: 18px; margin-bottom: 10px;">Notre équipe</p>
+                                <div style="font-size: 72px; font-weight: bold;" id="debriefOurScore">0</div>
+                            </div>
+                            <div style="font-size: 48px; font-weight: bold;">-</div>
+                            <div>
+                                <p style="font-size: 18px; margin-bottom: 10px;" id="debriefAdversaryName">Adversaire</p>
+                                <div style="font-size: 72px; font-weight: bold;" id="debriefAdversaryScore">0</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h3 style="margin-top: 30px; color: #dc3545;">👥 Composition de l'équipe</h3>
+                    <div id="debriefComposition" style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin-bottom: 30px;"></div>
                     
                     <div class="stats-grid">
                         <div class="stat-card">
@@ -770,6 +700,9 @@
                     <h3 style="margin-top: 30px; color: #dc3545;">Taux de réussite aux pénalités</h3>
                     <div id="penaliteStats"></div>
 
+                    <!-- NOUVEAU: Section stats vidéo dans le débrief -->
+                    <div id="debriefVideoStats"></div>
+
                     <h3 style="margin-top: 30px; color: #dc3545;">Détails des événements</h3>
                     <div id="debriefEvents"></div>
 
@@ -790,7 +723,10 @@
 
             <!-- Onglet Statistiques Globales -->
             <div class="tab-content" id="statistiques">
-                <h2 style="color: #dc3545;">Statistiques Globales de la Saison</h2>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="color: #dc3545;">Statistiques Globales de la Saison</h2>
+                    <button class="btn" onclick="exportGlobalStatsToPDF()" style="background: #28a745;">📄 Exporter en PDF</button>
+                </div>
                 
                 <div class="stats-grid">
                     <div class="stat-card">
@@ -827,17 +763,116 @@
                     </div>
                 </div>
 
+                <!-- NOUVEAU: Stats vidéo globales -->
+                <div id="globalVideoStats"></div>
+
                 <h3 style="margin-top: 40px; color: #dc3545;">Meilleurs marqueurs</h3>
                 <div id="topScorers"></div>
 
                 <h3 style="margin-top: 40px; color: #dc3545;">Meilleurs buteurs (Transformations & Pénalités)</h3>
                 <div id="topKickers"></div>
 
-                <h3 style="margin-top: 40px; color: #dc3545;">Temps de jeu par joueur</h3>
+                <!-- MODIFIÉ: Tous les joueurs, pas seulement top 10 -->
+                <h3 style="margin-top: 40px; color: #dc3545;">Temps de jeu par joueur (Tous les joueurs)</h3>
                 <div id="playTimeChart"></div>
 
                 <h3 style="margin-top: 40px; color: #dc3545;">Historique des matchs</h3>
                 <div id="matchHistory"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Statistiques Post-Match -->
+    <div class="modal" id="postMatchStatsModal">
+        <div class="modal-content" style="max-width: 1000px; max-height: 90vh; overflow-y: auto;">
+            <h2 style="color: #dc3545;">📊 Statistiques détaillées du match</h2>
+            
+            <div style="display: flex; gap: 10px; margin: 20px 0; flex-wrap: wrap;">
+                <button class="tab" id="tabTackles" onclick="switchStatsTab('tackles')" style="flex: 1; min-width: 150px;">Plaquages</button>
+                <button class="tab" id="tabKicks" onclick="switchStatsTab('kicks')" style="flex: 1; min-width: 150px;">Tirs au but</button>
+                <button class="tab" id="tabTeam" onclick="switchStatsTab('team')" style="flex: 1; min-width: 150px;">Équipe</button>
+            </div>
+            
+            <!-- Onglet Plaquages -->
+            <div id="statsTabTackles" style="display: none;">
+                <h3 style="color: #dc3545;">Plaquages par joueur</h3>
+                <div id="tacklesPlayersList"></div>
+            </div>
+            
+            <!-- Onglet Tirs au but -->
+            <div id="statsTabKicks" style="display: none;">
+                <h3 style="color: #dc3545;">Carte des tirs au but</h3>
+                <p style="color: #666; margin-bottom: 15px;">Sélectionnez un buteur puis cliquez sur le terrain pour placer les tirs</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <label><strong>Buteur:</strong></label>
+                    <select id="kickerSelect" style="padding: 10px; border: 2px solid #dc3545; border-radius: 8px; width: 100%; margin-top: 5px;">
+                        <option value="">Sélectionner un buteur</option>
+                    </select>
+                </div>
+                
+                <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="btn" onclick="setKickType('transformation')" id="btnTransfo" style="background: #17a2b8;">Transformation</button>
+                    <button class="btn" onclick="setKickType('penalite')" id="btnPenalite" style="background: #ffc107; color: #333;">Pénalité</button>
+                </div>
+                
+                <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 15px;">
+                    <strong>Mode actuel: <span id="kickModeText">Aucun</span></strong>
+                </div>
+                
+                <div id="rugbyFieldContainer" style="background: #2d8e3e; padding: 20px; border-radius: 10px; position: relative;">
+                    <svg id="rugbyField" width="100%" height="600" viewBox="0 0 400 600" style="background: #2d8e3e;">
+                        <rect x="0" y="0" width="400" height="600" fill="#2d8e3e" stroke="white" stroke-width="3"/>
+                        <line x1="0" y1="132" x2="400" y2="132" stroke="white" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="468" x2="400" y2="468" stroke="white" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="300" x2="400" y2="300" stroke="white" stroke-width="3"/>
+                        <line x1="0" y1="30" x2="400" y2="30" stroke="white" stroke-width="3"/>
+                        <line x1="0" y1="570" x2="400" y2="570" stroke="white" stroke-width="3"/>
+                        <rect x="180" y="0" width="40" height="30" fill="#ffffff"/>
+                        <rect x="185" y="5" width="5" height="25" fill="#8B4513"/>
+                        <rect x="210" y="5" width="5" height="25" fill="#8B4513"/>
+                        <rect x="180" y="570" width="40" height="30" fill="#ffffff"/>
+                        <rect x="185" y="575" width="5" height="25" fill="#8B4513"/>
+                        <rect x="210" y="575" width="5" height="25" fill="#8B4513"/>
+                        <rect id="fieldClickArea" x="0" y="0" width="400" height="600" fill="transparent" style="cursor: crosshair;"/>
+                    </svg>
+                </div>
+                
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="undoLastKick()" style="background: #6c757d;">↶ Annuler dernier tir</button>
+                </div>
+                
+                <div id="kickerStatsDisplay" style="margin-top: 20px;"></div>
+            </div>
+            
+            <!-- Onglet Équipe -->
+            <div id="statsTabTeam" style="display: none;">
+                <h3 style="color: #dc3545;">Statistiques d'équipe</h3>
+                
+                <div style="display: grid; gap: 15px; margin-top: 20px;">
+                    <div>
+                        <label><strong>Touches ratées:</strong></label>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                            <button onclick="adjustTeamStat('touchesRatees', -1)" style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">-</button>
+                            <input type="number" id="touchesRatees" value="0" min="0" style="padding: 10px; border: 2px solid #dc3545; border-radius: 8px; width: 100px; text-align: center; font-size: 18px; font-weight: bold;">
+                            <button onclick="adjustTeamStat('touchesRatees', 1)" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">+</button>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <label><strong>En-avants:</strong></label>
+                        <div style="display: flex; gap: 10px; align-items: center; margin-top: 5px;">
+                            <button onclick="adjustTeamStat('enAvants', -1)" style="padding: 10px 15px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">-</button>
+                            <input type="number" id="enAvants" value="0" min="0" style="padding: 10px; border: 2px solid #dc3545; border-radius: 8px; width: 100px; text-align: center; font-size: 18px; font-weight: bold;">
+                            <button onclick="adjustTeamStat('enAvants', 1)" style="padding: 10px 15px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">+</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="modal-buttons" style="margin-top: 30px;">
+                <button class="btn" style="background: #6c757d;" onclick="closePostMatchStats()">Fermer</button>
+                <button class="btn" onclick="savePostMatchStats()">Enregistrer</button>
             </div>
         </div>
     </div>
@@ -852,6 +887,11 @@
             </div>
         </div>
         <div class="panel-content" id="playerDetailBody"></div>
+        <div style="padding: 20px; border-top: 2px solid #e0e0e0;">
+            <button class="btn" onclick="resetPlayerStats()" style="width: 100%; background: #ffc107; color: #333;">
+                🔄 Réinitialiser les statistiques
+            </button>
+        </div>
     </div>
 
     <!-- Modal -->
@@ -866,6 +906,102 @@
         </div>
     </div>
 
+    <!-- Modal Édition Joueur -->
+    <div class="modal" id="editPlayerModal">
+        <div class="modal-content">
+            <h2 style="color: #dc3545;">Modifier le joueur</h2>
+            <div style="display: grid; gap: 15px; margin: 20px 0;">
+                <input type="text" id="editPlayerName" placeholder="Nom du joueur" style="padding: 10px; border: 2px solid #dc3545; border-radius: 8px;">
+                <input type="number" id="editPlayerNumber" placeholder="Numéro" style="padding: 10px; border: 2px solid #dc3545; border-radius: 8px;">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" style="background: #6c757d;" onclick="closeEditPlayerModal()">Annuler</button>
+                <button class="btn" onclick="confirmEditPlayer()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Édition Numéro dans Match -->
+    <div class="modal" id="editPlayerNumberModal">
+        <div class="modal-content">
+            <h2 style="color: #dc3545;">Modifier le numéro du joueur</h2>
+            <p style="margin-bottom: 15px; color: #666;">Cette modification s'appliquera à tous les matchs et statistiques du joueur.</p>
+            <div style="display: grid; gap: 15px; margin: 20px 0;">
+                <div>
+                    <label style="display: block; margin-bottom: 5px;"><strong>Joueur:</strong></label>
+                    <input type="text" id="editMatchPlayerName" readonly style="padding: 10px; border: 2px solid #e0e0e0; border-radius: 8px; background: #f8f9fa;">
+                </div>
+                <div>
+                    <label style="display: block; margin-bottom: 5px;"><strong>Nouveau numéro:</strong></label>
+                    <input type="number" id="editMatchPlayerNumber" placeholder="Numéro" min="1" max="99" style="padding: 10px; border: 2px solid #dc3545; border-radius: 8px;">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn" style="background: #6c757d;" onclick="closeEditPlayerNumberModal()">Annuler</button>
+                <button class="btn" onclick="confirmEditPlayerNumber()">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Liste des joueurs du match pour éditer les numéros -->
+    <div class="modal" id="matchPlayersNumbersModal">
+        <div class="modal-content" style="max-width: 700px;">
+            <h2 style="color: #dc3545;">🔢 Modifier les numéros des joueurs</h2>
+            <p style="margin-bottom: 20px; color: #666;">Cliquez sur le bouton d'édition pour modifier le numéro d'un joueur.</p>
+            
+            <div id="matchPlayersNumbersList"></div>
+            
+            <div class="modal-buttons" style="margin-top: 20px;">
+                <button class="btn" onclick="closeMatchPlayersNumbers()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Composition Simplifiée -->
+    <div class="modal" id="compositionModal">
+        <div class="modal-content" style="max-width: 900px; max-height: 90vh; overflow-y: auto;">
+            <h2 style="color: #dc3545;">👥 Composition de l'équipe</h2>
+            
+            <div style="margin: 20px 0;">
+                <input type="text" id="playerSearchCompo" placeholder="🔍 Rechercher un joueur..." style="width: 100%; padding: 12px; border: 2px solid #dc3545; border-radius: 8px; font-size: 16px;" oninput="filterCompositionPlayers()">
+            </div>
+            
+            <div style="background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;">
+                <div style="display: flex; justify-content: space-around; text-align: center;">
+                    <div>
+                        <strong style="color: #dc3545; font-size: 24px;" id="titulairesCount">0</strong>
+                        <div style="color: #666;">Titulaires (15 max)</div>
+                    </div>
+                    <div>
+                        <strong style="color: #17a2b8; font-size: 24px;" id="remplacantsCount">0</strong>
+                        <div style="color: #666;">Remplaçants (8 max)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                <div>
+                    <h3 style="color: #dc3545; margin-bottom: 15px;">🏃 Titulaires (15)</h3>
+                    <div id="titulairesSelectionList" style="display: grid; gap: 10px;"></div>
+                </div>
+                
+                <div>
+                    <h3 style="color: #17a2b8; margin-bottom: 15px;">💺 Remplaçants (8)</h3>
+                    <div id="remplacantsSelectionList" style="display: grid; gap: 10px;"></div>
+                </div>
+            </div>
+
+            <h3 style="margin-top: 30px; color: #666; margin-bottom: 15px;">📋 Tous les joueurs disponibles</h3>
+            <p style="color: #666; margin-bottom: 15px; font-size: 14px;">Cliquez sur un joueur pour l'ajouter en tant que titulaire ou remplaçant</p>
+            <div id="availablePlayersList" style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px;"></div>
+            
+            <div class="modal-buttons">
+                <button class="btn" style="background: #6c757d;" onclick="closeCompositionModal()">Annuler</button>
+                <button class="btn" onclick="confirmComposition()">Enregistrer la composition</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         let players = [];
         let composition = {};
@@ -875,10 +1011,31 @@
         let timerSeconds = 0;
         let timerRunning = false;
         let currentModalType = '';
+        let currentEditingPlayerId = null;
+        let currentKickType = null;
+        let currentKickerId = null;
+        let currentStatsTab = 'tackles';
+        let titulaires = [];
+        let remplacants = [];
+        let currentEditingPlayerIdForNumber = null;
 
         // Chargement des données
         function loadData() {
             players = JSON.parse(localStorage.getItem('rugbyPlayers') || '[]');
+            
+            // Migration: ajouter plaquages aux stats existantes
+            players.forEach(p => {
+                if (!p.stats.plaquages) {
+                    p.stats.plaquages = { reussis: 0, rates: 0 };
+                }
+                if (!p.stats.touchesRatees) {
+                    p.stats.touchesRatees = 0;
+                }
+                if (!p.stats.enAvants) {
+                    p.stats.enAvants = 0;
+                }
+            });
+            
             composition = JSON.parse(localStorage.getItem('rugbyComposition') || '{}');
             matches = JSON.parse(localStorage.getItem('rugbyMatches') || '[]');
         }
@@ -889,9 +1046,9 @@
             localStorage.setItem('rugbyMatches', JSON.stringify(matches));
         }
 
-        // Navigation
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+        // Navigation - CORRIGÉ
+        function switchTab(event, tabName) {
+            document.querySelectorAll('.tabs .tab').forEach(t => t.classList.remove('active'));
             document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
             
             event.target.classList.add('active');
@@ -911,7 +1068,6 @@
                 return;
             }
             
-            // Trouver le prochain numéro disponible
             const existingNumbers = players.map(p => p.number);
             let nextNumber = 1;
             while (existingNumbers.includes(nextNumber)) {
@@ -931,12 +1087,14 @@
                     penalites: { reussies: 0, tentees: 0 },
                     cartonsJaunes: 0,
                     cartonsRouges: 0,
-                    tempsTotal: 0
+                    tempsTotal: 0,
+                    plaquages: { reussis: 0, rates: 0 },
+                    touchesRatees: 0,
+                    enAvants: 0
                 }
             });
             saveData();
             renderPlayersStats();
-            renderComposition();
             
             document.getElementById('playerName').value = '';
         }
@@ -954,6 +1112,11 @@
                     Math.round((stats.penalites.reussies / stats.penalites.tentees) * 100) : 0;
                 const minutes = Math.floor(stats.tempsTotal / 60);
                 
+                // NOUVEAU: Afficher aussi les plaquages
+                const totalPlaquages = stats.plaquages.reussis + stats.plaquages.rates;
+                const plaquagesPct = totalPlaquages > 0 ? 
+                    Math.round((stats.plaquages.reussis / totalPlaquages) * 100) : 0;
+                
                 const itemDiv = document.createElement('div');
                 itemDiv.className = 'player-stat-item';
                 
@@ -964,6 +1127,7 @@
                         Matchs: ${stats.totalMatches} | Points: ${stats.totalPoints} | Essais: ${stats.essais} | 
                         Transfo: ${stats.transformations.reussies}/${stats.transformations.tentees} (${transfoPct}%) | 
                         Péna: ${stats.penalites.reussies}/${stats.penalites.tentees} (${penalitePct}%) | 
+                        Plaquages: ${stats.plaquages.reussis}/${totalPlaquages} (${plaquagesPct}%) | 
                         Temps: ${minutes}min | 
                         Cartons: ${stats.cartonsJaunes}🟨 ${stats.cartonsRouges}🟥
                     </div>
@@ -980,6 +1144,14 @@
                 detailBtn.textContent = 'Détails';
                 detailBtn.onclick = () => showPlayerDetail(p.id);
                 
+                const editBtn = document.createElement('button');
+                editBtn.className = 'btn';
+                editBtn.style.background = '#ffc107';
+                editBtn.style.color = '#333';
+                editBtn.style.fontSize = '12px';
+                editBtn.textContent = 'Modifier';
+                editBtn.onclick = () => editPlayer(p.id);
+                
                 const deleteBtn = document.createElement('button');
                 deleteBtn.className = 'btn';
                 deleteBtn.style.background = '#6c757d';
@@ -988,6 +1160,7 @@
                 deleteBtn.onclick = () => deletePlayer(p.id);
                 
                 buttonsDiv.appendChild(detailBtn);
+                buttonsDiv.appendChild(editBtn);
                 buttonsDiv.appendChild(deleteBtn);
                 
                 itemDiv.appendChild(infoDiv);
@@ -1007,6 +1180,11 @@
                 Math.round((stats.penalites.reussies / stats.penalites.tentees) * 100) : 0;
             const totalMinutes = Math.floor(stats.tempsTotal / 60);
             const avgPoints = stats.totalMatches > 0 ? (stats.totalPoints / stats.totalMatches).toFixed(1) : 0;
+            
+            // NOUVEAU: Stats plaquages
+            const totalPlaquages = stats.plaquages.reussis + stats.plaquages.rates;
+            const plaquagesPct = totalPlaquages > 0 ? 
+                Math.round((stats.plaquages.reussis / totalPlaquages) * 100) : 0;
             
             document.getElementById('playerDetailName').textContent = player.name;
             document.getElementById('playerDetailBody').innerHTML = `
@@ -1054,6 +1232,19 @@
                     </div>
                 </div>
 
+                <h4 style="color: #dc3545; margin: 25px 0 15px 0;">💪 Défense</h4>
+
+                <div class="mini-stat">
+                    <div class="mini-stat-label">Plaquages</div>
+                    <div class="mini-stat-value" style="font-size: 18px;">
+                        ${stats.plaquages.reussis}/${totalPlaquages}
+                        <span style="color: ${plaquagesPct >= 80 ? '#28a745' : plaquagesPct >= 60 ? '#ffc107' : '#dc3545'}; margin-left: 10px;">${plaquagesPct}%</span>
+                    </div>
+                    <div style="background: #e0e0e0; height: 10px; border-radius: 5px; overflow: hidden; margin-top: 8px;">
+                        <div style="background: ${plaquagesPct >= 80 ? '#28a745' : plaquagesPct >= 60 ? '#ffc107' : '#dc3545'}; height: 100%; width: ${plaquagesPct}%; transition: width 0.3s;"></div>
+                    </div>
+                </div>
+
                 <h4 style="color: #dc3545; margin: 25px 0 15px 0;">Temps de jeu & Discipline</h4>
 
                 <div class="mini-stat">
@@ -1085,225 +1276,448 @@
             document.getElementById('panelOverlay').classList.remove('active');
         }
 
-        // Statistiques globales
-        function renderGlobalStats() {
-            const finishedMatches = matches.filter(m => m.finished);
-            
-            // Calculs globaux
-            let totalPoints = 0;
-            let totalEssais = 0;
-            let totalTransfoReussies = 0;
-            let totalTransfoTentees = 0;
-            let totalPenaliteReussies = 0;
-            let totalPenaliteTentees = 0;
-            
-            finishedMatches.forEach(match => {
-                totalPoints += match.score;
-                match.events.forEach(e => {
-                    if (e.type === 'essai') totalEssais++;
-                    if (e.type === 'transformation') {
-                        totalTransfoTentees++;
-                        if (e.success) totalTransfoReussies++;
-                    }
-                    if (e.type === 'penalite') {
-                        totalPenaliteTentees++;
-                        if (e.success) totalPenaliteReussies++;
-                    }
-                });
-            });
-            
-            const avgScore = finishedMatches.length > 0 ? Math.round(totalPoints / finishedMatches.length) : 0;
-            const transfoRate = totalTransfoTentees > 0 ? Math.round((totalTransfoReussies / totalTransfoTentees) * 100) : 0;
-            const penaliteRate = totalPenaliteTentees > 0 ? Math.round((totalPenaliteReussies / totalPenaliteTentees) * 100) : 0;
-            
-            document.getElementById('globalTotalMatches').textContent = finishedMatches.length;
-            document.getElementById('globalTotalPoints').textContent = totalPoints;
-            document.getElementById('globalTotalEssais').textContent = totalEssais;
-            document.getElementById('globalTotalTransformations').textContent = totalTransfoReussies;
-            document.getElementById('globalTotalPenalites').textContent = totalPenaliteReussies;
-            document.getElementById('globalTransfoRate').textContent = transfoRate + '%';
-            document.getElementById('globalPenaliteRate').textContent = penaliteRate + '%';
-            document.getElementById('globalAverageScore').textContent = avgScore;
-            
-            // Meilleurs marqueurs
-            const scorers = {};
-            players.forEach(p => {
-                if (p.stats.totalPoints > 0) {
-                    scorers[p.name] = p.stats.totalPoints;
-                }
-            });
-            
-            const sortedScorers = Object.entries(scorers).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            const topScorersDiv = document.getElementById('topScorers');
-            topScorersDiv.innerHTML = sortedScorers.length > 0 ? sortedScorers.map(([name, points], index) => {
-                const maxPoints = sortedScorers[0][1];
-                const barWidth = (points / maxPoints) * 100;
-                return `
-                    <div class="player-stat-item">
-                        <div style="flex: 1;">
-                            <strong>${index + 1}. ${name}</strong>
-                            <div style="background: #e0e0e0; height: 20px; border-radius: 10px; margin-top: 5px; overflow: hidden;">
-                                <div style="background: linear-gradient(135deg, #dc3545, #8b0000); height: 100%; width: ${barWidth}%; transition: width 0.3s;"></div>
-                            </div>
-                        </div>
-                        <div style="font-size: 24px; font-weight: bold; color: #dc3545; margin-left: 20px;">
-                            ${points}
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<p>Aucun point marqué</p>';
-            
-            // Meilleurs buteurs
-            const kickers = {};
-            players.forEach(p => {
-                const total = p.stats.transformations.reussies + p.stats.penalites.reussies;
-                if (total > 0) {
-                    kickers[p.name] = total;
-                }
-            });
-            
-            const sortedKickers = Object.entries(kickers).sort((a, b) => b[1] - a[1]).slice(0, 5);
-            const topKickersDiv = document.getElementById('topKickers');
-            topKickersDiv.innerHTML = sortedKickers.length > 0 ? sortedKickers.map(([name, kicks], index) => {
-                const maxKicks = sortedKickers[0][1];
-                const barWidth = (kicks / maxKicks) * 100;
-                return `
-                    <div class="player-stat-item">
-                        <div style="flex: 1;">
-                            <strong>${index + 1}. ${name}</strong>
-                            <div style="background: #e0e0e0; height: 20px; border-radius: 10px; margin-top: 5px; overflow: hidden;">
-                                <div style="background: linear-gradient(135deg, #17a2b8, #117a8b); height: 100%; width: ${barWidth}%; transition: width 0.3s;"></div>
-                            </div>
-                        </div>
-                        <div style="font-size: 24px; font-weight: bold; color: #17a2b8; margin-left: 20px;">
-                            ${kicks}
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<p>Aucun coup de pied réussi</p>';
-            
-            // Temps de jeu
-            const playTimes = {};
-            players.forEach(p => {
-                if (p.stats.tempsTotal > 0) {
-                    playTimes[p.name] = Math.floor(p.stats.tempsTotal / 60);
-                }
-            });
-            
-            const sortedPlayTimes = Object.entries(playTimes).sort((a, b) => b[1] - a[1]).slice(0, 10);
-            const playTimeChartDiv = document.getElementById('playTimeChart');
-            playTimeChartDiv.innerHTML = sortedPlayTimes.length > 0 ? sortedPlayTimes.map(([name, minutes]) => {
-                const maxMinutes = sortedPlayTimes[0][1];
-                const barWidth = (minutes / maxMinutes) * 100;
-                return `
-                    <div class="player-stat-item">
-                        <div style="flex: 1;">
-                            <strong>${name}</strong>
-                            <div style="background: #e0e0e0; height: 20px; border-radius: 10px; margin-top: 5px; overflow: hidden;">
-                                <div style="background: linear-gradient(135deg, #28a745, #1e7e34); height: 100%; width: ${barWidth}%; transition: width 0.3s;"></div>
-                            </div>
-                        </div>
-                        <div style="font-size: 18px; font-weight: bold; color: #28a745; margin-left: 20px;">
-                            ${minutes} min
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<p>Aucun temps de jeu enregistré</p>';
-            
-            // Historique des matchs
-            const matchHistoryDiv = document.getElementById('matchHistory');
-            matchHistoryDiv.innerHTML = finishedMatches.length > 0 ? finishedMatches.map(match => {
-                const essais = match.events.filter(e => e.type === 'essai').length;
-                const transfos = match.events.filter(e => e.type === 'transformation' && e.success).length;
-                const penalites = match.events.filter(e => e.type === 'penalite' && e.success).length;
-                
-                return `
-                    <div class="match-item">
-                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                            <div>
-                                <h3 style="color: #dc3545;">${match.adversaire}</h3>
-                                <p>📅 ${new Date(match.date).toLocaleDateString('fr-FR')} - 📍 ${match.lieu || 'Lieu non précisé'}</p>
-                            </div>
-                            <div style="text-align: center;">
-                                <div style="font-size: 48px; font-weight: bold; color: #dc3545;">${match.score}</div>
-                                <div style="font-size: 12px; color: #666;">
-                                    ${essais} essais | ${transfos} transfo | ${penalites} péna
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                `;
-            }).join('') : '<p>Aucun match terminé</p>';
-        }
-
         function deletePlayer(id) {
             if (confirm('Supprimer ce joueur ?')) {
                 players = players.filter(p => p.id !== id);
                 saveData();
                 renderPlayersStats();
-                renderComposition();
             }
         }
 
-        // Composition
-        function renderComposition() {
-            for (let i = 1; i <= 23; i++) {
-                const select = document.getElementById(`pos${i}`);
-                if (select) {
-                    select.innerHTML = '<option value="">Sélectionner</option>' + 
-                        players.map(p => `<option value="${p.id}" ${composition[i] == p.id ? 'selected' : ''}>#${p.number} - ${p.name}</option>`).join('');
-                }
-            }
-        }
-
-        function saveComposition() {
-            for (let i = 1; i <= 23; i++) {
-                const select = document.getElementById(`pos${i}`);
-                if (select && select.value) {
-                    composition[i] = parseInt(select.value);
-                }
-            }
-            saveData();
+        function editPlayer(id) {
+            const player = players.find(p => p.id === id);
+            if (!player) return;
             
-            // Si un match est en cours (non terminé), mettre à jour les joueurs
-            if (currentMatch && !currentMatch.finished) {
-                updateCurrentMatchPlayers();
+            currentEditingPlayerId = id;
+            document.getElementById('editPlayerName').value = player.name;
+            document.getElementById('editPlayerNumber').value = player.number;
+            document.getElementById('editPlayerModal').classList.add('active');
+        }
+
+        function closeEditPlayerModal() {
+            document.getElementById('editPlayerModal').classList.remove('active');
+            currentEditingPlayerId = null;
+        }
+
+        function confirmEditPlayer() {
+            const name = document.getElementById('editPlayerName').value;
+            const number = document.getElementById('editPlayerNumber').value;
+            
+            if (!name || !number) {
+                alert('Veuillez remplir tous les champs');
+                return;
+            }
+            
+            const player = players.find(p => p.id === currentEditingPlayerId);
+            if (player) {
+                player.name = name;
+                player.number = parseInt(number);
+                saveData();
+                renderPlayersStats();
+                closeEditPlayerModal();
             }
         }
 
-        function updateCurrentMatchPlayers() {
-            // Mettre à jour la liste des joueurs du match en cours
-            const newSelectedPlayers = [];
-            for (let i = 1; i <= 23; i++) {
-                if (composition[i]) {
-                    const player = players.find(p => p.id === composition[i]);
-                    if (player) {
-                        // Chercher si ce joueur était déjà dans le match
-                        const existingPlayer = currentMatch.players.find(p => p.id === player.id);
-                        
-                        if (existingPlayer) {
-                            // Garder les stats existantes
-                            newSelectedPlayers.push(existingPlayer);
-                        } else {
-                            // Nouveau joueur
-                            newSelectedPlayers.push({
-                                ...player,
-                                positionNumber: i,
-                                timeOn: i <= 15 ? timerSeconds : null,
-                                totalTime: 0,
-                                cartons: [],
-                                points: 0
-                            });
-                        }
+        // NOUVEAU: Éditer le numéro d'un joueur depuis la composition du match
+        function editPlayerNumberInMatch(playerId) {
+            const player = players.find(p => p.id === playerId);
+            if (!player) return;
+            
+            currentEditingPlayerIdForNumber = playerId;
+            document.getElementById('editMatchPlayerName').value = player.name;
+            document.getElementById('editMatchPlayerNumber').value = player.number;
+            document.getElementById('editPlayerNumberModal').classList.add('active');
+        }
+
+        function closeEditPlayerNumberModal() {
+            document.getElementById('editPlayerNumberModal').classList.remove('active');
+            currentEditingPlayerIdForNumber = null;
+        }
+
+        function confirmEditPlayerNumber() {
+            const number = document.getElementById('editMatchPlayerNumber').value;
+            
+            if (!number || number < 1 || number > 99) {
+                alert('Veuillez entrer un numéro valide (entre 1 et 99)');
+                return;
+            }
+            
+            const player = players.find(p => p.id === currentEditingPlayerIdForNumber);
+            if (player) {
+                player.number = parseInt(number);
+                
+                // Mettre à jour le numéro dans le match actuel aussi
+                if (currentMatch) {
+                    const matchPlayer = currentMatch.players.find(p => p.id === currentEditingPlayerIdForNumber);
+                    if (matchPlayer) {
+                        matchPlayer.number = parseInt(number);
                     }
+                    saveMatchData();
                 }
+                
+                saveData();
+                
+                // Rafraîchir l'affichage approprié
+                if (document.getElementById('matchDebrief').style.display === 'block') {
+                    showDebrief();
+                } else if (document.getElementById('matchPlayersNumbersModal').classList.contains('active')) {
+                    showMatchPlayersNumbers();
+                }
+                
+                closeEditPlayerNumberModal();
+                alert('✅ Numéro modifié avec succès !');
+            }
+        }
+
+        // NOUVEAU: Afficher la liste des joueurs du match pour modifier les numéros
+        function showMatchPlayersNumbers() {
+            if (!currentMatch || !currentMatch.players) {
+                alert('⚠️ Aucun match en cours');
+                return;
             }
             
-            currentMatch.players = newSelectedPlayers;
-            saveMatchData();
+            const list = document.getElementById('matchPlayersNumbersList');
+            list.innerHTML = '';
+            
+            // Séparer titulaires et remplaçants
+            const titulaires = currentMatch.players.filter(p => p.positionNumber <= 15).sort((a, b) => a.positionNumber - b.positionNumber);
+            const remplacants = currentMatch.players.filter(p => p.positionNumber > 15).sort((a, b) => a.positionNumber - b.positionNumber);
+            
+            if (titulaires.length > 0) {
+                list.innerHTML += '<h4 style="color: #dc3545; margin-bottom: 15px;">🏃 Titulaires</h4>';
+                titulaires.forEach(p => {
+                    list.innerHTML += `
+                        <div class="player-stat-item" style="margin-bottom: 10px;">
+                            <div>
+                                <strong style="font-size: 16px;">#${p.number} - ${p.name}</strong>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">Position: ${p.positionNumber}</div>
+                            </div>
+                            <button class="btn" onclick="editPlayerNumberInMatch(${p.id})" style="background: #17a2b8; font-size: 12px;">
+                                ✏️ Modifier
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+            
+            if (remplacants.length > 0) {
+                list.innerHTML += '<h4 style="color: #dc3545; margin: 25px 0 15px 0;">💺 Remplaçants</h4>';
+                remplacants.forEach(p => {
+                    list.innerHTML += `
+                        <div class="player-stat-item" style="margin-bottom: 10px;">
+                            <div>
+                                <strong style="font-size: 16px;">#${p.number} - ${p.name}</strong>
+                                <div style="font-size: 12px; color: #666; margin-top: 5px;">Position: ${p.positionNumber}</div>
+                            </div>
+                            <button class="btn" onclick="editPlayerNumberInMatch(${p.id})" style="background: #17a2b8; font-size: 12px;">
+                                ✏️ Modifier
+                            </button>
+                        </div>
+                    `;
+                });
+            }
+            
+            document.getElementById('matchPlayersNumbersModal').classList.add('active');
+        }
+
+        function closeMatchPlayersNumbers() {
+            document.getElementById('matchPlayersNumbersModal').classList.remove('active');
+            
+            // Rafraîchir l'affichage si on est en match live
             if (document.getElementById('matchLive').style.display === 'block') {
                 renderPlayersStatsTable();
             }
+        }
+
+        function resetPlayerStats() {
+            const playerName = document.getElementById('playerDetailName').textContent;
+            
+            if (!confirm(`⚠️ Voulez-vous vraiment réinitialiser toutes les statistiques de ${playerName} ?\n\nCette action est irréversible !`)) {
+                return;
+            }
+            
+            const player = players.find(p => p.name === playerName);
+            if (player) {
+                player.stats = {
+                    totalMatches: 0,
+                    totalPoints: 0,
+                    essais: 0,
+                    transformations: { reussies: 0, tentees: 0 },
+                    penalites: { reussies: 0, tentees: 0 },
+                    cartonsJaunes: 0,
+                    cartonsRouges: 0,
+                    tempsTotal: 0,
+                    plaquages: { reussis: 0, rates: 0 },
+                    touchesRatees: 0,
+                    enAvants: 0
+                };
+                saveData();
+                renderPlayersStats();
+                showPlayerDetail(player.id);
+                alert('✅ Statistiques réinitialisées avec succès !');
+            }
+        }
+
+        function filterPlayers() {
+            const search = document.getElementById('playerSearch').value.toLowerCase();
+            const items = document.querySelectorAll('#playersStatsList .player-stat-item');
+            
+            items.forEach(item => {
+                const text = item.textContent.toLowerCase();
+                item.style.display = text.includes(search) ? 'flex' : 'none';
+            });
+        }
+
+        // Composition
+        function showCompositionModal() {
+            if (players.length === 0) {
+                alert('⚠️ Vous devez d\'abord ajouter des joueurs dans l\'onglet "Joueurs" !');
+                return;
+            }
+            
+            titulaires = [];
+            remplacants = [];
+            
+            if (currentMatch && currentMatch.composition) {
+                Object.entries(currentMatch.composition).forEach(([position, playerId]) => {
+                    const pos = parseInt(position);
+                    if (pos <= 15 && !titulaires.includes(playerId)) {
+                        titulaires.push(playerId);
+                    } else if (pos > 15 && !remplacants.includes(playerId)) {
+                        remplacants.push(playerId);
+                    }
+                });
+            } else {
+                Object.entries(composition).forEach(([position, playerId]) => {
+                    const pos = parseInt(position);
+                    if (pos <= 15 && !titulaires.includes(playerId)) {
+                        titulaires.push(playerId);
+                    } else if (pos > 15 && !remplacants.includes(playerId)) {
+                        remplacants.push(playerId);
+                    }
+                });
+            }
+            
+            renderCompositionLists();
+            document.getElementById('compositionModal').classList.add('active');
+        }
+
+        function closeCompositionModal() {
+            document.getElementById('compositionModal').classList.remove('active');
+        }
+
+        function renderCompositionLists() {
+            const searchTerm = document.getElementById('playerSearchCompo') ? document.getElementById('playerSearchCompo').value.toLowerCase() : '';
+            const sortedPlayers = [...players].sort((a, b) => a.name.localeCompare(b.name));
+            const filteredPlayers = searchTerm ? sortedPlayers.filter(p => p.name.toLowerCase().includes(searchTerm)) : sortedPlayers;
+            
+            document.getElementById('titulairesCount').textContent = titulaires.length;
+            document.getElementById('remplacantsCount').textContent = remplacants.length;
+            
+            const titulairesDiv = document.getElementById('titulairesSelectionList');
+            titulairesDiv.innerHTML = '';
+            
+            titulaires.forEach(playerId => {
+                const player = players.find(p => p.id === playerId);
+                if (player) {
+                    const card = createPlayerCard(player, 'titulaire');
+                    titulairesDiv.appendChild(card);
+                }
+            });
+            
+            if (titulaires.length === 0) {
+                titulairesDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Aucun titulaire sélectionné</p>';
+            }
+            
+            const remplacantsDiv = document.getElementById('remplacantsSelectionList');
+            remplacantsDiv.innerHTML = '';
+            
+            remplacants.forEach(playerId => {
+                const player = players.find(p => p.id === playerId);
+                if (player) {
+                    const card = createPlayerCard(player, 'remplacant');
+                    remplacantsDiv.appendChild(card);
+                }
+            });
+            
+            if (remplacants.length === 0) {
+                remplacantsDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Aucun remplaçant sélectionné</p>';
+            }
+            
+            const availableDiv = document.getElementById('availablePlayersList');
+            availableDiv.innerHTML = '';
+            
+            const availablePlayers = filteredPlayers.filter(p => 
+                !titulaires.includes(p.id) && !remplacants.includes(p.id)
+            );
+            
+            availablePlayers.forEach(p => {
+                const card = createPlayerCard(p, 'available');
+                availableDiv.appendChild(card);
+            });
+            
+            if (availablePlayers.length === 0) {
+                availableDiv.innerHTML = '<p style="text-align: center; color: #999; padding: 20px;">Tous les joueurs sont sélectionnés</p>';
+            }
+        }
+
+        function createPlayerCard(player, type) {
+            const card = document.createElement('div');
+            
+            if (type === 'titulaire') {
+                card.style.cssText = `
+                    padding: 12px;
+                    border-radius: 8px;
+                    background: #dc3545;
+                    color: white;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    border: 2px solid #dc3545;
+                `;
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>#${player.number} - ${player.name}</strong>
+                        <span style="font-size: 18px;">✕</span>
+                    </div>
+                `;
+                card.onclick = () => removeFromTitulaires(player.id);
+            } else if (type === 'remplacant') {
+                card.style.cssText = `
+                    padding: 12px;
+                    border-radius: 8px;
+                    background: #17a2b8;
+                    color: white;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    border: 2px solid #17a2b8;
+                `;
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <strong>#${player.number} - ${player.name}</strong>
+                        <span style="font-size: 18px;">✕</span>
+                    </div>
+                `;
+                card.onclick = () => removeFromRemplacants(player.id);
+            } else {
+                card.style.cssText = `
+                    padding: 12px;
+                    border-radius: 8px;
+                    background: white;
+                    cursor: pointer;
+                    transition: all 0.3s;
+                    border: 2px solid #e0e0e0;
+                `;
+                card.innerHTML = `
+                    <div style="margin-bottom: 10px;">
+                        <strong>#${player.number} - ${player.name}</strong>
+                    </div>
+                    <div style="display: flex; gap: 5px;">
+                        <button style="flex: 1; padding: 8px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;" onclick="event.stopPropagation(); addAsTitulaire(${player.id})">
+                            🏃 Titulaire
+                        </button>
+                        <button style="flex: 1; padding: 8px; background: #17a2b8; color: white; border: none; border-radius: 5px; cursor: pointer; font-size: 12px;" onclick="event.stopPropagation(); addAsRemplacant(${player.id})">
+                            💺 Remplaçant
+                        </button>
+                    </div>
+                `;
+            }
+            
+            return card;
+        }
+
+        function addAsTitulaire(playerId) {
+            if (titulaires.length >= 15) {
+                alert('⚠️ Vous avez déjà 15 titulaires');
+                return;
+            }
+            titulaires.push(playerId);
+            renderCompositionLists();
+        }
+
+        function addAsRemplacant(playerId) {
+            if (remplacants.length >= 8) {
+                alert('⚠️ Vous avez déjà 8 remplaçants');
+                return;
+            }
+            remplacants.push(playerId);
+            renderCompositionLists();
+        }
+
+        function removeFromTitulaires(playerId) {
+            titulaires = titulaires.filter(id => id !== playerId);
+            renderCompositionLists();
+        }
+
+        function removeFromRemplacants(playerId) {
+            remplacants = remplacants.filter(id => id !== playerId);
+            renderCompositionLists();
+        }
+
+        function filterCompositionPlayers() {
+            renderCompositionLists();
+        }
+
+        function confirmComposition() {
+            if (titulaires.length === 0) {
+                alert('⚠️ Vous devez sélectionner au moins 1 titulaire');
+                return;
+            }
+            
+            composition = {};
+            
+            titulaires.forEach((playerId, index) => {
+                composition[index + 1] = playerId;
+            });
+            
+            remplacants.forEach((playerId, index) => {
+                composition[index + 16] = playerId;
+            });
+            
+            saveData();
+            
+            if (!currentMatch) {
+                createMatch();
+            } else {
+                updateCurrentMatchPlayers();
+            }
+            
+            closeCompositionModal();
+        }
+
+        function updateCurrentMatchPlayers() {
+            if (!currentMatch) return;
+            
+            const newSelectedPlayers = [];
+            
+            Object.entries(composition).forEach(([position, playerId]) => {
+                const player = players.find(p => p.id === playerId);
+                if (player) {
+                    const existingPlayer = currentMatch.players.find(p => p.id === player.id);
+                    
+                    if (existingPlayer) {
+                        newSelectedPlayers.push(existingPlayer);
+                    } else {
+                        newSelectedPlayers.push({
+                            ...player,
+                            positionNumber: parseInt(position),
+                            timeOn: parseInt(position) <= 15 ? timerSeconds : null,
+                            totalTime: 0,
+                            cartons: [],
+                            points: 0
+                        });
+                    }
+                }
+            });
+            
+            currentMatch.players = newSelectedPlayers;
+            currentMatch.composition = {...composition};
+            saveMatchData();
+            
+            if (document.getElementById('matchLive').style.display === 'block') {
+                renderPlayersStatsTable();
+            }
+            
+            alert('✅ Composition mise à jour avec succès !');
         }
 
         // Matchs
@@ -1314,6 +1728,12 @@
             
             if (!adversaire || !date) {
                 alert('Veuillez remplir au moins l\'adversaire et la date');
+                return;
+            }
+            
+            const hasComposition = Object.keys(composition).length > 0;
+            if (!hasComposition) {
+                alert('Veuillez sélectionner au moins un joueur dans la composition');
                 return;
             }
             
@@ -1340,10 +1760,13 @@
                 date,
                 lieu,
                 score: 0,
+                adversaryScore: 0,
                 events: [],
                 players: selectedPlayers,
+                composition: {...composition},
                 finished: false,
-                currentTime: 0
+                currentTime: 0,
+                postMatchStats: null
             };
             
             matches.push(match);
@@ -1353,6 +1776,8 @@
             document.getElementById('adversaire').value = '';
             document.getElementById('matchDate').value = '';
             document.getElementById('lieu').value = '';
+            
+            alert('✅ Match créé avec succès !');
         }
 
         function renderMatches() {
@@ -1376,7 +1801,6 @@
         }
 
         function openMatch(matchId) {
-            // Récupérer le match depuis le tableau pour avoir les dernières données
             const match = matches.find(m => m.id === matchId);
             currentMatch = match;
             
@@ -1387,8 +1811,9 @@
                 document.getElementById('matchLive').style.display = 'block';
                 document.getElementById('matchTitle').textContent = `vs ${currentMatch.adversaire}`;
                 document.getElementById('scoreDisplay').textContent = currentMatch.score;
+                document.getElementById('adversaryName').textContent = currentMatch.adversaire;
+                document.getElementById('adversaryScore').textContent = currentMatch.adversaryScore || 0;
                 
-                // Restaurer le temps du match (qui continue en arrière-plan)
                 if (currentMatch.currentTime !== undefined) {
                     timerSeconds = currentMatch.currentTime;
                 }
@@ -1397,6 +1822,19 @@
                 renderEventsList();
                 renderPlayersStatsTable();
             }
+        }
+
+        function addAdversaryScore(points) {
+            if (!currentMatch) return;
+            
+            currentMatch.adversaryScore = (currentMatch.adversaryScore || 0) + points;
+            
+            if (currentMatch.adversaryScore < 0) {
+                currentMatch.adversaryScore = 0;
+            }
+            
+            document.getElementById('adversaryScore').textContent = currentMatch.adversaryScore;
+            saveMatchData();
         }
 
         function deleteMatch(matchId) {
@@ -1408,19 +1846,15 @@
         }
 
         function backToMatches() {
-            // Sauvegarder le temps actuel si le match n'est pas terminé
             if (currentMatch && !currentMatch.finished) {
                 currentMatch.currentTime = timerSeconds;
                 saveMatchData();
             }
             
-            // Afficher la liste des matchs
             document.getElementById('matchsList').style.display = 'block';
             document.getElementById('matchLive').style.display = 'none';
             document.getElementById('matchDebrief').style.display = 'none';
             
-            // Ne PAS réinitialiser currentMatch ni timerSeconds
-            // Le timer continue en arrière-plan
             renderMatches();
         }
 
@@ -1449,6 +1883,21 @@
             updateTimer();
         }
 
+        function adjustTimer(seconds) {
+            timerSeconds += seconds;
+            
+            if (timerSeconds < 0) {
+                timerSeconds = 0;
+            }
+            
+            updateTimer();
+            
+            if (currentMatch) {
+                currentMatch.currentTime = timerSeconds;
+                saveMatchData();
+            }
+        }
+
         function updateTimer() {
             const minutes = Math.floor(timerSeconds / 60);
             const seconds = timerSeconds % 60;
@@ -1464,7 +1913,6 @@
                     }
                 });
                 
-                // Sauvegarder le temps actuel du match
                 currentMatch.currentTime = timerSeconds;
                 saveMatchData();
             }
@@ -1477,9 +1925,30 @@
             const modalTitle = document.getElementById('modalTitle');
             const modalBody = document.getElementById('modalBody');
             
-            const activePlayers = currentMatch.players.filter(p => p.timeOn !== null);
+            const matchPlayers = currentMatch.players || [];
+            const titulairesPlayers = matchPlayers.filter(p => p.positionNumber <= 15);
+            const remplacantsPlayers = matchPlayers.filter(p => p.positionNumber > 15);
+            
+            if (matchPlayers.length === 0) {
+                alert('⚠️ Aucun joueur dans la composition du match');
+                return;
+            }
+            
             const minutes = Math.floor(timerSeconds / 60);
             const seconds = timerSeconds % 60;
+            
+            const createPlayerOptions = () => {
+                let html = '<optgroup label="🏃 Titulaires">';
+                html += titulairesPlayers.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('');
+                html += '</optgroup>';
+                
+                if (remplacantsPlayers.length > 0) {
+                    html += '<optgroup label="💺 Remplaçants">';
+                    html += remplacantsPlayers.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('');
+                    html += '</optgroup>';
+                }
+                return html;
+            };
             
             if (type === 'essai') {
                 modalTitle.textContent = 'Essai marqué';
@@ -1489,7 +1958,7 @@
                     <label>Joueur:</label>
                     <select id="modalPlayerSelect">
                         <option value="">Sélectionner le joueur</option>
-                        ${activePlayers.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('')}
+                        ${createPlayerOptions()}
                     </select>
                 `;
             } else if (type === 'transformation') {
@@ -1500,7 +1969,7 @@
                     <label>Joueur:</label>
                     <select id="modalPlayerSelect">
                         <option value="">Sélectionner le joueur</option>
-                        ${activePlayers.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('')}
+                        ${createPlayerOptions()}
                     </select>
                     <div class="checkbox-group">
                         <input type="checkbox" id="transfoSuccess" checked>
@@ -1515,7 +1984,7 @@
                     <label>Joueur:</label>
                     <select id="modalPlayerSelect">
                         <option value="">Sélectionner le joueur</option>
-                        ${activePlayers.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('')}
+                        ${createPlayerOptions()}
                     </select>
                     <div class="checkbox-group">
                         <input type="checkbox" id="penaliteSuccess" checked>
@@ -1530,7 +1999,7 @@
                     <label>Joueur:</label>
                     <select id="modalPlayerSelect">
                         <option value="">Sélectionner le joueur</option>
-                        ${activePlayers.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('')}
+                        ${createPlayerOptions()}
                     </select>
                     <label>Type de carton:</label>
                     <select id="cartonType">
@@ -1539,8 +2008,10 @@
                     </select>
                 `;
             } else if (type === 'remplacement') {
+                const activePlayers = matchPlayers.filter(p => p.timeOn !== null);
+                const benchPlayers = matchPlayers.filter(p => p.timeOn === null);
+                
                 modalTitle.textContent = 'Remplacement';
-                const benchPlayers = currentMatch.players.filter(p => p.timeOn === null);
                 modalBody.innerHTML = `
                     <label>Temps (minutes:secondes):</label>
                     <input type="text" id="eventTime" value="${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}" placeholder="00:00">
@@ -1567,7 +2038,6 @@
         function confirmModal() {
             const type = currentModalType;
             
-            // Récupérer le temps saisi
             const eventTimeInput = document.getElementById('eventTime');
             let eventTime = timerSeconds;
             
@@ -1769,7 +2239,6 @@
             
             const event = currentMatch.events[eventIndex];
             
-            // Annuler les effets de l'événement
             if (event.type === 'essai') {
                 currentMatch.score -= 5;
                 const player = currentMatch.players.find(p => p.id === event.playerId);
@@ -1788,19 +2257,15 @@
                     player.cartons = player.cartons.filter(c => c.time !== event.time || c.type !== event.cartonType);
                 }
             } else if (event.type === 'remplacement') {
-                // Annuler le remplacement
                 const playerOut = currentMatch.players.find(p => p.name === event.playerOut);
                 const playerIn = currentMatch.players.find(p => p.name === event.playerIn);
                 
                 if (playerOut && playerIn) {
-                    // Remettre le joueur sorti sur le terrain
                     playerOut.timeOn = 0;
-                    // Remettre le joueur entré sur le banc
                     playerIn.timeOn = null;
                 }
             }
             
-            // Supprimer l'événement
             currentMatch.events.splice(eventIndex, 1);
             
             saveMatchData();
@@ -1841,7 +2306,27 @@
             currentMatch.finished = true;
             currentMatch.finalTime = timerSeconds;
             
-            // Mise à jour des stats des joueurs
+            // NOUVEAU: Sauvegarder les stats vidéo dans les stats globales des joueurs (uniquement si pas déjà sauvegardées)
+            if (currentMatch.postMatchStats && currentMatch.postMatchStats.tackles && !currentMatch.tacklesAlreadySaved) {
+                currentMatch.previousTackles = {};
+                currentMatch.players.forEach(matchPlayer => {
+                    const player = players.find(p => p.id === matchPlayer.id);
+                    if (player && currentMatch.postMatchStats.tackles[matchPlayer.id]) {
+                        const tackles = currentMatch.postMatchStats.tackles[matchPlayer.id];
+                        
+                        // Sauvegarder une copie pour pouvoir retirer plus tard
+                        currentMatch.previousTackles[matchPlayer.id] = {
+                            reussis: tackles.reussis,
+                            rates: tackles.rates
+                        };
+                        
+                        player.stats.plaquages.reussis += tackles.reussis;
+                        player.stats.plaquages.rates += tackles.rates;
+                    }
+                });
+                currentMatch.tacklesAlreadySaved = true;
+            }
+            
             currentMatch.players.forEach(matchPlayer => {
                 const player = players.find(p => p.id === matchPlayer.id);
                 if (player) {
@@ -1849,7 +2334,6 @@
                     player.stats.totalPoints += matchPlayer.points;
                     player.stats.tempsTotal += matchPlayer.totalTime;
                     
-                    // Cartons
                     matchPlayer.cartons.forEach(c => {
                         if (c.type === 'jaune') player.stats.cartonsJaunes++;
                         else player.stats.cartonsRouges++;
@@ -1857,7 +2341,6 @@
                 }
             });
             
-            // Essais, transformations, pénalités
             currentMatch.events.forEach(e => {
                 const player = players.find(p => p.id === e.playerId);
                 if (player) {
@@ -1884,7 +2367,51 @@
             document.getElementById('matchDebrief').style.display = 'block';
             
             document.getElementById('debriefTitle').textContent = `Débrief: vs ${currentMatch.adversaire}`;
+            document.getElementById('debriefOurScore').textContent = currentMatch.score;
+            document.getElementById('debriefAdversaryName').textContent = currentMatch.adversaire;
+            document.getElementById('debriefAdversaryScore').textContent = currentMatch.adversaryScore || 0;
             document.getElementById('debriefScore').textContent = currentMatch.score;
+            
+            // Composition
+            const compositionDiv = document.getElementById('debriefComposition');
+            if (currentMatch.composition && Object.keys(currentMatch.composition).length > 0) {
+                let titulairesHTML = '<h4 style="color: #dc3545; margin-bottom: 10px;">Titulaires:</h4><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-bottom: 20px;">';
+                let remplacantsHTML = '<h4 style="color: #dc3545; margin-bottom: 10px;">Remplaçants:</h4><div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px;">';
+                
+                let titulairesCount = 0;
+                let remplacantsCount = 0;
+                
+                Object.entries(currentMatch.composition).forEach(([position, playerId]) => {
+                    const player = players.find(p => p.id === playerId);
+                    if (player) {
+                        const posNum = parseInt(position);
+                        const playerHTML = `
+                            <div style="background: white; padding: 10px; border-radius: 5px; border-left: 3px solid #dc3545; display: flex; justify-content: space-between; align-items: center;">
+                                <span><strong>#${player.number}</strong> ${player.name}</span>
+                                <button onclick="editPlayerNumberInMatch(${player.id})" style="background: #17a2b8; color: white; border: none; padding: 5px 10px; border-radius: 5px; cursor: pointer; font-size: 12px;" title="Modifier le numéro">✏️</button>
+                            </div>
+                        `;
+                        if (posNum <= 15) {
+                            titulairesHTML += playerHTML;
+                            titulairesCount++;
+                        } else {
+                            remplacantsHTML += playerHTML;
+                            remplacantsCount++;
+                        }
+                    }
+                });
+                
+                titulairesHTML += '</div>';
+                remplacantsHTML += '</div>';
+                
+                if (titulairesCount === 0 && remplacantsCount === 0) {
+                    compositionDiv.innerHTML = '<p>Aucune composition enregistrée</p>';
+                } else {
+                    compositionDiv.innerHTML = (titulairesCount > 0 ? titulairesHTML : '') + (remplacantsCount > 0 ? remplacantsHTML : '');
+                }
+            } else {
+                compositionDiv.innerHTML = '<p>Aucune composition enregistrée</p>';
+            }
             
             const essais = currentMatch.events.filter(e => e.type === 'essai').length;
             const transformations = currentMatch.events.filter(e => e.type === 'transformation' && e.success).length;
@@ -1894,7 +2421,7 @@
             document.getElementById('debriefTransformations').textContent = transformations;
             document.getElementById('debriefPenalites').textContent = penalites;
             
-            // Stats transformations par joueur
+            // Stats transformations
             const transfoStats = {};
             currentMatch.events.filter(e => e.type === 'transformation').forEach(e => {
                 if (!transfoStats[e.player]) {
@@ -1920,7 +2447,7 @@
                     `;
                 }).join('') : '<p>Aucune transformation tentée</p>';
             
-            // Stats pénalités par joueur
+            // Stats pénalités
             const penaliteStats = {};
             currentMatch.events.filter(e => e.type === 'penalite').forEach(e => {
                 if (!penaliteStats[e.player]) {
@@ -1945,6 +2472,149 @@
                         </div>
                     `;
                 }).join('') : '<p>Aucune pénalité tentée</p>';
+            
+            // NOUVEAU: Afficher la carte des tirs dans le débrief
+        function renderDebriefKicksMap() {
+            const kicksMapDiv = document.createElement('div');
+            kicksMapDiv.id = 'debriefKicksMap';
+            
+            // Insérer après les stats de pénalités et avant les stats vidéo
+            const penaliteStatsDiv = document.getElementById('penaliteStats');
+            const videoStatsDiv = document.getElementById('debriefVideoStats');
+            
+            if (!currentMatch.postMatchStats || !currentMatch.postMatchStats.kicks || currentMatch.postMatchStats.kicks.length === 0) {
+                kicksMapDiv.innerHTML = '';
+                if (videoStatsDiv.previousElementSibling && videoStatsDiv.previousElementSibling.id === 'debriefKicksMap') {
+                    videoStatsDiv.previousElementSibling.remove();
+                }
+                return;
+            }
+            
+            const kicks = currentMatch.postMatchStats.kicks;
+            
+            let html = '<h3 style="margin-top: 30px; color: #dc3545;">🎯 Carte des tirs au but</h3>';
+            
+            // Créer le terrain de rugby avec les tirs
+            html += `
+                <div style="background: #2d8e3e; padding: 20px; border-radius: 10px; position: relative; margin: 20px 0;">
+                    <svg id="debriefRugbyField" width="100%" height="600" viewBox="0 0 400 600" style="background: #2d8e3e;">
+                        <rect x="0" y="0" width="400" height="600" fill="#2d8e3e" stroke="white" stroke-width="3"/>
+                        <line x1="0" y1="132" x2="400" y2="132" stroke="white" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="468" x2="400" y2="468" stroke="white" stroke-width="2" stroke-dasharray="5,5"/>
+                        <line x1="0" y1="300" x2="400" y2="300" stroke="white" stroke-width="3"/>
+                        <line x1="0" y1="30" x2="400" y2="30" stroke="white" stroke-width="3"/>
+                        <line x1="0" y1="570" x2="400" y2="570" stroke="white" stroke-width="3"/>
+                        <rect x="180" y="0" width="40" height="30" fill="#ffffff"/>
+                        <rect x="185" y="5" width="5" height="25" fill="#8B4513"/>
+                        <rect x="210" y="5" width="5" height="25" fill="#8B4513"/>
+                        <rect x="180" y="570" width="40" height="30" fill="#ffffff"/>
+                        <rect x="185" y="575" width="5" height="25" fill="#8B4513"/>
+                        <rect x="210" y="575" width="5" height="25" fill="#8B4513"/>
+            `;
+            
+            // Ajouter les tirs sur le terrain
+            kicks.forEach((kick, index) => {
+                const color = kick.success ? '#28a745' : '#dc3545';
+                const player = currentMatch.players.find(p => p.id === kick.kickerId);
+                const playerName = player ? player.name : 'Inconnu';
+                const kickType = kick.type === 'transformation' ? 'Transfo' : 'Péna';
+                const kickStatus = kick.success ? 'réussie' : 'ratée';
+                
+                html += `
+                    <circle cx="${kick.x}" cy="${kick.y}" r="8" fill="${color}" stroke="white" stroke-width="2" class="kick-ball">
+                        <title>${kickType} ${kickStatus} - ${playerName}</title>
+                    </circle>
+                `;
+            });
+            
+            html += '</svg></div>';
+            
+            // Légende
+            html += `
+                <div style="display: flex; justify-content: center; gap: 30px; margin-top: 15px; flex-wrap: wrap;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: #28a745; border: 2px solid white;"></div>
+                        <span>Tir réussi</span>
+                    </div>
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <div style="width: 20px; height: 20px; border-radius: 50%; background: #dc3545; border: 2px solid white;"></div>
+                        <span>Tir raté</span>
+                    </div>
+                </div>
+            `;
+            
+            // Statistiques par joueur
+            html += '<h4 style="margin-top: 30px; color: #dc3545;">📊 Détails des buteurs</h4>';
+            
+            const kickerStats = {};
+            kicks.forEach(kick => {
+                if (!kickerStats[kick.kickerId]) {
+                    const player = currentMatch.players.find(p => p.id === kick.kickerId);
+                    kickerStats[kick.kickerId] = {
+                        name: player ? player.name : 'Inconnu',
+                        transformations: { reussies: 0, tentees: 0 },
+                        penalites: { reussies: 0, tentees: 0 }
+                    };
+                }
+                
+                if (kick.type === 'transformation') {
+                    kickerStats[kick.kickerId].transformations.tentees++;
+                    if (kick.success) kickerStats[kick.kickerId].transformations.reussies++;
+                } else {
+                    kickerStats[kick.kickerId].penalites.tentees++;
+                    if (kick.success) kickerStats[kick.kickerId].penalites.reussies++;
+                }
+            });
+            
+            Object.values(kickerStats).forEach(kicker => {
+                const transfoPct = kicker.transformations.tentees > 0 ? 
+                    Math.round((kicker.transformations.reussies / kicker.transformations.tentees) * 100) : 0;
+                const penalitePct = kicker.penalites.tentees > 0 ? 
+                    Math.round((kicker.penalites.reussies / kicker.penalites.tentees) * 100) : 0;
+                
+                const totalReussies = kicker.transformations.reussies + kicker.penalites.reussies;
+                const totalTentees = kicker.transformations.tentees + kicker.penalites.tentees;
+                const totalPct = totalTentees > 0 ? Math.round((totalReussies / totalTentees) * 100) : 0;
+                
+                html += `
+                    <div class="player-stat-item">
+                        <div style="flex: 1;">
+                            <strong style="font-size: 18px;">${kicker.name}</strong>
+                            <div style="font-size: 14px; color: #666; margin-top: 8px;">
+                                🎯 Transformations: ${kicker.transformations.reussies}/${kicker.transformations.tentees} 
+                                <span style="color: ${transfoPct >= 70 ? '#28a745' : transfoPct >= 50 ? '#ffc107' : '#dc3545'}; font-weight: bold;">(${transfoPct}%)</span>
+                                ${kicker.transformations.tentees > 0 ? ' | ' : ''}
+                                ${kicker.penalites.tentees > 0 ? `🥅 Pénalités: ${kicker.penalites.reussies}/${kicker.penalites.tentees} 
+                                <span style="color: ${penalitePct >= 70 ? '#28a745' : penalitePct >= 50 ? '#ffc107' : '#dc3545'}; font-weight: bold;">(${penalitePct}%)</span>` : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: center;">
+                            <div style="font-size: 32px; font-weight: bold; color: ${totalPct >= 70 ? '#28a745' : totalPct >= 50 ? '#ffc107' : '#dc3545'};">
+                                ${totalPct}%
+                            </div>
+                            <div style="font-size: 12px; color: #666;">Global</div>
+                        </div>
+                    </div>
+                `;
+            });
+            
+            kicksMapDiv.innerHTML = html;
+            
+            // Supprimer l'ancienne version si elle existe
+            const existingMap = document.getElementById('debriefKicksMap');
+            if (existingMap) {
+                existingMap.remove();
+            }
+            
+            // Insérer avant les stats vidéo
+            videoStatsDiv.parentNode.insertBefore(kicksMapDiv, videoStatsDiv);
+        }
+
+        // NOUVEAU: Afficher les stats vidéo dans le débrief
+            renderDebriefVideoStats();
+            
+            // NOUVEAU: Afficher la carte des transformations
+            renderDebriefKicksMap();
             
             const eventsDiv = document.getElementById('debriefEvents');
             eventsDiv.innerHTML = currentMatch.events.map(e => {
@@ -1989,18 +2659,647 @@
             }).join('');
         }
 
+        // NOUVEAU: Afficher les stats vidéo dans le débrief
+        function renderDebriefVideoStats() {
+            const videoStatsDiv = document.getElementById('debriefVideoStats');
+            
+            if (!currentMatch.postMatchStats) {
+                videoStatsDiv.innerHTML = '';
+                return;
+            }
+            
+            const stats = currentMatch.postMatchStats;
+            
+            let html = '<h3 style="margin-top: 30px; color: #dc3545;">📹 Statistiques d\'analyse vidéo</h3>';
+            
+            // Stats d'équipe
+            html += '<div class="stats-grid" style="margin-bottom: 20px;">';
+            html += `
+                <div class="stat-card">
+                    <h3>${stats.touchesRatees || 0}</h3>
+                    <p>Touches ratées</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${stats.enAvants || 0}</h3>
+                    <p>En-avants</p>
+                </div>
+            `;
+            html += '</div>';
+            
+            // Plaquages par joueur
+            if (stats.tackles && Object.keys(stats.tackles).length > 0) {
+                html += '<h4 style="color: #dc3545; margin-top: 20px;">💪 Plaquages par joueur</h4>';
+                
+                const tacklesList = Object.entries(stats.tackles)
+                    .map(([playerId, tackles]) => {
+                        const player = currentMatch.players.find(p => p.id === parseInt(playerId));
+                        if (!player) return null;
+                        const total = tackles.reussis + tackles.rates;
+                        const pct = total > 0 ? Math.round((tackles.reussis / total) * 100) : 0;
+                        return { player: player.name, ...tackles, total, pct };
+                    })
+                    .filter(t => t && t.total > 0)
+                    .sort((a, b) => b.reussis - a.reussis);
+                
+                tacklesList.forEach(t => {
+                    html += `
+                        <div class="player-stat-item">
+                            <div>
+                                <strong>${t.player}</strong>: ${t.reussis} réussis / ${t.rates} ratés (${t.total} total)
+                            </div>
+                            <div style="font-size: 24px; font-weight: bold; color: ${t.pct >= 80 ? '#28a745' : t.pct >= 60 ? '#ffc107' : '#dc3545'};">
+                                ${t.pct}%
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Carte des tirs
+            if (stats.kicks && stats.kicks.length > 0) {
+                html += '<h4 style="color: #dc3545; margin-top: 20px;">🎯 Carte des tirs au but</h4>';
+                
+                const kickerStats = {};
+                stats.kicks.forEach(kick => {
+                    if (!kickerStats[kick.kickerId]) {
+                        const player = currentMatch.players.find(p => p.id === kick.kickerId);
+                        kickerStats[kick.kickerId] = {
+                            name: player ? player.name : 'Inconnu',
+                            transformations: { reussies: 0, tentees: 0 },
+                            penalites: { reussies: 0, tentees: 0 }
+                        };
+                    }
+                    
+                    if (kick.type === 'transformation') {
+                        kickerStats[kick.kickerId].transformations.tentees++;
+                        if (kick.success) kickerStats[kick.kickerId].transformations.reussies++;
+                    } else {
+                        kickerStats[kick.kickerId].penalites.tentees++;
+                        if (kick.success) kickerStats[kick.kickerId].penalites.reussies++;
+                    }
+                });
+                
+                Object.values(kickerStats).forEach(kicker => {
+                    const transfoPct = kicker.transformations.tentees > 0 ? 
+                        Math.round((kicker.transformations.reussies / kicker.transformations.tentees) * 100) : 0;
+                    const penalitePct = kicker.penalites.tentees > 0 ? 
+                        Math.round((kicker.penalites.reussies / kicker.penalites.tentees) * 100) : 0;
+                    
+                    html += `
+                        <div class="player-stat-item">
+                            <div>
+                                <strong>${kicker.name}</strong><br>
+                                <span style="font-size: 12px;">
+                                    Transfo: ${kicker.transformations.reussies}/${kicker.transformations.tentees} (${transfoPct}%) | 
+                                    Péna: ${kicker.penalites.reussies}/${kicker.penalites.tentees} (${penalitePct}%)
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            videoStatsDiv.innerHTML = html;
+        }
+
         function exportToPDF() {
             window.print();
         }
 
-        // Export/Import des données
+        // NOUVEAU: Export PDF des stats globales
+        function exportGlobalStatsToPDF() {
+            window.print();
+        }
+
+        // Statistiques globales - MODIFIÉ
+        function renderGlobalStats() {
+            const finishedMatches = matches.filter(m => m.finished);
+            
+            let totalPoints = 0;
+            let totalEssais = 0;
+            let totalTransfoReussies = 0;
+            let totalTransfoTentees = 0;
+            let totalPenaliteReussies = 0;
+            let totalPenaliteTentees = 0;
+            
+            finishedMatches.forEach(match => {
+                totalPoints += match.score;
+                match.events.forEach(e => {
+                    if (e.type === 'essai') totalEssais++;
+                    if (e.type === 'transformation') {
+                        totalTransfoTentees++;
+                        if (e.success) totalTransfoReussies++;
+                    }
+                    if (e.type === 'penalite') {
+                        totalPenaliteTentees++;
+                        if (e.success) totalPenaliteReussies++;
+                    }
+                });
+            });
+            
+            const avgScore = finishedMatches.length > 0 ? Math.round(totalPoints / finishedMatches.length) : 0;
+            const transfoRate = totalTransfoTentees > 0 ? Math.round((totalTransfoReussies / totalTransfoTentees) * 100) : 0;
+            const penaliteRate = totalPenaliteTentees > 0 ? Math.round((totalPenaliteReussies / totalPenaliteTentees) * 100) : 0;
+            
+            document.getElementById('globalTotalMatches').textContent = finishedMatches.length;
+            document.getElementById('globalTotalPoints').textContent = totalPoints;
+            document.getElementById('globalTotalEssais').textContent = totalEssais;
+            document.getElementById('globalTotalTransformations').textContent = totalTransfoReussies;
+            document.getElementById('globalTotalPenalites').textContent = totalPenaliteReussies;
+            document.getElementById('globalTransfoRate').textContent = transfoRate + '%';
+            document.getElementById('globalPenaliteRate').textContent = penaliteRate + '%';
+            document.getElementById('globalAverageScore').textContent = avgScore;
+            
+            // NOUVEAU: Stats vidéo globales
+            renderGlobalVideoStats();
+            
+            // Meilleurs marqueurs
+            const scorers = {};
+            players.forEach(p => {
+                if (p.stats.totalPoints > 0) {
+                    scorers[p.name] = p.stats.totalPoints;
+                }
+            });
+            
+            const sortedScorers = Object.entries(scorers).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const topScorersDiv = document.getElementById('topScorers');
+            topScorersDiv.innerHTML = sortedScorers.length > 0 ? sortedScorers.map(([name, points], index) => {
+                const maxPoints = sortedScorers[0][1];
+                const barWidth = (points / maxPoints) * 100;
+                return `
+                    <div class="player-stat-item">
+                        <div style="flex: 1;">
+                            <strong>${index + 1}. ${name}</strong>
+                            <div style="background: #e0e0e0; height: 20px; border-radius: 10px; margin-top: 5px; overflow: hidden;">
+                                <div style="background: linear-gradient(135deg, #dc3545, #8b0000); height: 100%; width: ${barWidth}%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <div style="font-size: 24px; font-weight: bold; color: #dc3545; margin-left: 20px;">
+                            ${points}
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p>Aucun point marqué</p>';
+            
+            // Meilleurs buteurs
+            const kickers = {};
+            players.forEach(p => {
+                const total = p.stats.transformations.reussies + p.stats.penalites.reussies;
+                if (total > 0) {
+                    kickers[p.name] = total;
+                }
+            });
+            
+            const sortedKickers = Object.entries(kickers).sort((a, b) => b[1] - a[1]).slice(0, 5);
+            const topKickersDiv = document.getElementById('topKickers');
+            topKickersDiv.innerHTML = sortedKickers.length > 0 ? sortedKickers.map(([name, kicks], index) => {
+                const maxKicks = sortedKickers[0][1];
+                const barWidth = (kicks / maxKicks) * 100;
+                return `
+                    <div class="player-stat-item">
+                        <div style="flex: 1;">
+                            <strong>${index + 1}. ${name}</strong>
+                            <div style="background: #e0e0e0; height: 20px; border-radius: 10px; margin-top: 5px; overflow: hidden;">
+                                <div style="background: linear-gradient(135deg, #17a2b8, #117a8b); height: 100%; width: ${barWidth}%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <div style="font-size: 24px; font-weight: bold; color: #17a2b8; margin-left: 20px;">
+                            ${kicks}
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p>Aucun coup de pied réussi</p>';
+            
+            // MODIFIÉ: Tous les joueurs (pas seulement top 10)
+            const playTimes = {};
+            players.forEach(p => {
+                if (p.stats.tempsTotal > 0) {
+                    playTimes[p.name] = Math.floor(p.stats.tempsTotal / 60);
+                }
+            });
+            
+            const sortedPlayTimes = Object.entries(playTimes).sort((a, b) => b[1] - a[1]);
+            const playTimeChartDiv = document.getElementById('playTimeChart');
+            playTimeChartDiv.innerHTML = sortedPlayTimes.length > 0 ? sortedPlayTimes.map(([name, minutes]) => {
+                const maxMinutes = sortedPlayTimes[0][1];
+                const barWidth = maxMinutes > 0 ? (minutes / maxMinutes) * 100 : 0;
+                return `
+                    <div class="player-stat-item">
+                        <div style="flex: 1;">
+                            <strong>${name}</strong>
+                            <div style="background: #e0e0e0; height: 20px; border-radius: 10px; margin-top: 5px; overflow: hidden;">
+                                <div style="background: linear-gradient(135deg, #28a745, #1e7e34); height: 100%; width: ${barWidth}%; transition: width 0.3s;"></div>
+                            </div>
+                        </div>
+                        <div style="font-size: 18px; font-weight: bold; color: #28a745; margin-left: 20px;">
+                            ${minutes} min
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p>Aucun temps de jeu enregistré</p>';
+            
+            // Historique des matchs
+            const matchHistoryDiv = document.getElementById('matchHistory');
+            matchHistoryDiv.innerHTML = finishedMatches.length > 0 ? finishedMatches.map(match => {
+                const essais = match.events.filter(e => e.type === 'essai').length;
+                const transfos = match.events.filter(e => e.type === 'transformation' && e.success).length;
+                const penalites = match.events.filter(e => e.type === 'penalite' && e.success).length;
+                
+                return `
+                    <div class="match-item">
+                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                            <div>
+                                <h3 style="color: #dc3545;">${match.adversaire}</h3>
+                                <p>📅 ${new Date(match.date).toLocaleDateString('fr-FR')} - 📍 ${match.lieu || 'Lieu non précisé'}</p>
+                            </div>
+                            <div style="text-align: center;">
+                                <div style="font-size: 48px; font-weight: bold; color: #dc3545;">${match.score} - ${match.adversaryScore || 0}</div>
+                                <div style="font-size: 12px; color: #666;">
+                                    ${essais} essais | ${transfos} transfo | ${penalites} péna
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('') : '<p>Aucun match terminé</p>';
+        }
+
+        // NOUVEAU: Afficher les stats vidéo globales
+        function renderGlobalVideoStats() {
+            const videoStatsDiv = document.getElementById('globalVideoStats');
+            
+            // Calculer les stats globales
+            let totalTouchesRatees = 0;
+            let totalEnAvants = 0;
+            let globalTackles = {};
+            
+            matches.filter(m => m.finished && m.postMatchStats).forEach(match => {
+                const stats = match.postMatchStats;
+                totalTouchesRatees += stats.touchesRatees || 0;
+                totalEnAvants += stats.enAvants || 0;
+            });
+            
+            // Calculer les plaquages globaux depuis les stats des joueurs
+            players.forEach(p => {
+                const total = p.stats.plaquages.reussis + p.stats.plaquages.rates;
+                if (total > 0) {
+                    globalTackles[p.name] = {
+                        reussis: p.stats.plaquages.reussis,
+                        rates: p.stats.plaquages.rates,
+                        total: total,
+                        pct: Math.round((p.stats.plaquages.reussis / total) * 100)
+                    };
+                }
+            });
+            
+            const sortedTackles = Object.entries(globalTackles).sort((a, b) => b[1].reussis - a[1].reussis).slice(0, 10);
+            
+            let html = '<h3 style="margin-top: 40px; color: #dc3545;">📹 Statistiques vidéo de la saison</h3>';
+            
+            html += '<div class="stats-grid">';
+            html += `
+                <div class="stat-card">
+                    <h3>${totalTouchesRatees}</h3>
+                    <p>Touches ratées (total)</p>
+                </div>
+                <div class="stat-card">
+                    <h3>${totalEnAvants}</h3>
+                    <p>En-avants (total)</p>
+                </div>
+            `;
+            html += '</div>';
+            
+            if (sortedTackles.length > 0) {
+                html += '<h4 style="margin-top: 30px; color: #dc3545;">💪 Top 10 Plaqueurs</h4>';
+                sortedTackles.forEach(([name, tackles], index) => {
+                    html += `
+                        <div class="player-stat-item">
+                            <div style="flex: 1;">
+                                <strong>${index + 1}. ${name}</strong>: ${tackles.reussis} réussis / ${tackles.rates} ratés (${tackles.total} total)
+                                <div style="background: #e0e0e0; height: 10px; border-radius: 5px; margin-top: 5px; overflow: hidden;">
+                                    <div style="background: ${tackles.pct >= 80 ? '#28a745' : tackles.pct >= 60 ? '#ffc107' : '#dc3545'}; height: 100%; width: ${tackles.pct}%; transition: width 0.3s;"></div>
+                                </div>
+                            </div>
+                            <div style="font-size: 24px; font-weight: bold; color: ${tackles.pct >= 80 ? '#28a745' : tackles.pct >= 60 ? '#ffc107' : '#dc3545'}; margin-left: 20px;">
+                                ${tackles.pct}%
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            videoStatsDiv.innerHTML = html;
+        }
+
+        // Statistiques post-match
+        function openPostMatchStats() {
+            if (!currentMatch) return;
+            
+            if (!currentMatch.postMatchStats) {
+                currentMatch.postMatchStats = {
+                    tackles: {},
+                    kicks: [],
+                    touchesRatees: 0,
+                    enAvants: 0
+                };
+                
+                currentMatch.players.forEach(p => {
+                    currentMatch.postMatchStats.tackles[p.id] = {
+                        reussis: 0,
+                        rates: 0
+                    };
+                });
+            }
+            
+            const kickerSelect = document.getElementById('kickerSelect');
+            kickerSelect.innerHTML = '<option value="">Sélectionner un buteur</option>' +
+                currentMatch.players.map(p => `<option value="${p.id}">#${p.number} - ${p.name}</option>`).join('');
+            
+            document.getElementById('touchesRatees').value = currentMatch.postMatchStats.touchesRatees || 0;
+            document.getElementById('enAvants').value = currentMatch.postMatchStats.enAvants || 0;
+            
+            switchStatsTab('tackles');
+            document.getElementById('postMatchStatsModal').classList.add('active');
+        }
+
+        function closePostMatchStats() {
+            document.getElementById('postMatchStatsModal').classList.remove('active');
+        }
+
+        function switchStatsTab(tab) {
+            currentStatsTab = tab;
+            
+            document.getElementById('statsTabTackles').style.display = 'none';
+            document.getElementById('statsTabKicks').style.display = 'none';
+            document.getElementById('statsTabTeam').style.display = 'none';
+            
+            document.querySelectorAll('#postMatchStatsModal .tab').forEach(t => t.classList.remove('active'));
+            
+            if (tab === 'tackles') {
+                document.getElementById('statsTabTackles').style.display = 'block';
+                document.getElementById('tabTackles').classList.add('active');
+                renderTacklesTab();
+            } else if (tab === 'kicks') {
+                document.getElementById('statsTabKicks').style.display = 'block';
+                document.getElementById('tabKicks').classList.add('active');
+                renderKicksOnField();
+            } else if (tab === 'team') {
+                document.getElementById('statsTabTeam').style.display = 'block';
+                document.getElementById('tabTeam').classList.add('active');
+            }
+        }
+
+        function renderTacklesTab() {
+            const list = document.getElementById('tacklesPlayersList');
+            list.innerHTML = '';
+            
+            currentMatch.players.forEach(p => {
+                const tackles = currentMatch.postMatchStats.tackles[p.id] || { reussis: 0, rates: 0 };
+                
+                const card = document.createElement('div');
+                card.style.cssText = 'background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 10px; border-left: 4px solid #dc3545;';
+                card.innerHTML = `
+                    <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                        <div>
+                            <strong style="font-size: 16px;">#${p.number} - ${p.name}</strong>
+                        </div>
+                        <div style="display: flex; gap: 20px; align-items: center;">
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Plaquages réussis</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    <button onclick="adjustTackles(${p.id}, 'reussis', -1)" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">-</button>
+                                    <span style="font-size: 20px; font-weight: bold; color: #28a745; min-width: 40px; text-align: center;">${tackles.reussis}</span>
+                                    <button onclick="adjustTackles(${p.id}, 'reussis', 1)" style="padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">+</button>
+                                </div>
+                            </div>
+                            <div>
+                                <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Plaquages ratés</div>
+                                <div style="display: flex; gap: 5px; align-items: center;">
+                                    <button onclick="adjustTackles(${p.id}, 'rates', -1)" style="padding: 5px 10px; background: #dc3545; color: white; border: none; border-radius: 5px; cursor: pointer;">-</button>
+                                    <span style="font-size: 20px; font-weight: bold; color: #dc3545; min-width: 40px; text-align: center;">${tackles.rates}</span>
+                                    <button onclick="adjustTackles(${p.id}, 'rates', 1)" style="padding: 5px 10px; background: #28a745; color: white; border: none; border-radius: 5px; cursor: pointer;">+</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                
+                list.appendChild(card);
+            });
+        }
+
+        function adjustTackles(playerId, type, value) {
+            if (!currentMatch.postMatchStats.tackles[playerId]) {
+                currentMatch.postMatchStats.tackles[playerId] = { reussis: 0, rates: 0 };
+            }
+            
+            currentMatch.postMatchStats.tackles[playerId][type] += value;
+            
+            if (currentMatch.postMatchStats.tackles[playerId][type] < 0) {
+                currentMatch.postMatchStats.tackles[playerId][type] = 0;
+            }
+            
+            renderTacklesTab();
+        }
+
+        function adjustTeamStat(stat, value) {
+            const input = document.getElementById(stat);
+            let currentValue = parseInt(input.value) || 0;
+            currentValue += value;
+            
+            if (currentValue < 0) currentValue = 0;
+            
+            input.value = currentValue;
+        }
+
+        function setKickType(type) {
+            currentKickType = type;
+            
+            document.getElementById('btnTransfo').style.opacity = type === 'transformation' ? '1' : '0.5';
+            document.getElementById('btnPenalite').style.opacity = type === 'penalite' ? '1' : '0.5';
+            
+            document.getElementById('kickModeText').textContent = type === 'transformation' ? 'Transformation' : 'Pénalité';
+            
+            const kickerId = document.getElementById('kickerSelect').value;
+            if (!kickerId) {
+                alert('⚠️ Veuillez d\'abord sélectionner un buteur');
+                currentKickType = null;
+                document.getElementById('kickModeText').textContent = 'Aucun';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const fieldClickArea = document.getElementById('fieldClickArea');
+            if (fieldClickArea) {
+                fieldClickArea.addEventListener('click', function(e) {
+                    if (!currentKickType) {
+                        alert('⚠️ Veuillez d\'abord sélectionner le type de tir (Transformation ou Pénalité)');
+                        return;
+                    }
+                    
+                    const kickerId = document.getElementById('kickerSelect').value;
+                    if (!kickerId) {
+                        alert('⚠️ Veuillez d\'abord sélectionner un buteur');
+                        return;
+                    }
+                    
+                    const rect = document.getElementById('rugbyField').getBoundingClientRect();
+                    const x = ((e.clientX - rect.left) / rect.width) * 400;
+                    const y = ((e.clientY - rect.top) / rect.height) * 600;
+                    
+                    const success = confirm('Tir réussi ? (OK = Réussi, Annuler = Raté)');
+                    
+                    const kick = {
+                        kickerId: parseInt(kickerId),
+                        type: currentKickType,
+                        x: x,
+                        y: y,
+                        success: success
+                    };
+                    
+                    currentMatch.postMatchStats.kicks.push(kick);
+                    renderKicksOnField();
+                    updateKickerStats();
+                });
+            }
+        });
+
+        function renderKicksOnField() {
+            if (!currentMatch || !currentMatch.postMatchStats) return;
+            
+            const svg = document.getElementById('rugbyField');
+            
+            const existingBalls = svg.querySelectorAll('.kick-ball');
+            existingBalls.forEach(ball => ball.remove());
+            
+            currentMatch.postMatchStats.kicks.forEach((kick, index) => {
+                const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+                circle.setAttribute('cx', kick.x);
+                circle.setAttribute('cy', kick.y);
+                circle.setAttribute('r', '8');
+                circle.setAttribute('fill', kick.success ? '#28a745' : '#dc3545');
+                circle.setAttribute('stroke', 'white');
+                circle.setAttribute('stroke-width', '2');
+                circle.setAttribute('class', 'kick-ball');
+                circle.style.cursor = 'pointer';
+                
+                circle.innerHTML = `<title>${kick.type === 'transformation' ? 'Transformation' : 'Pénalité'} ${kick.success ? 'réussie' : 'ratée'}</title>`;
+                
+                svg.appendChild(circle);
+            });
+            
+            updateKickerStats();
+        }
+
+        function updateKickerStats() {
+            const kickerId = document.getElementById('kickerSelect').value;
+            if (!kickerId) {
+                document.getElementById('kickerStatsDisplay').innerHTML = '';
+                return;
+            }
+            
+            const player = currentMatch.players.find(p => p.id === parseInt(kickerId));
+            if (!player) return;
+            
+            const playerKicks = currentMatch.postMatchStats.kicks.filter(k => k.kickerId === parseInt(kickerId));
+            
+            const transfos = playerKicks.filter(k => k.type === 'transformation');
+            const transfoReussies = transfos.filter(k => k.success).length;
+            const transfoPct = transfos.length > 0 ? Math.round((transfoReussies / transfos.length) * 100) : 0;
+            
+            const penalites = playerKicks.filter(k => k.type === 'penalite');
+            const penaliteReussies = penalites.filter(k => k.success).length;
+            const penalitePct = penalites.length > 0 ? Math.round((penaliteReussies / penalites.length) * 100) : 0;
+            
+            document.getElementById('kickerStatsDisplay').innerHTML = `
+                <div style="background: #f8f9fa; padding: 20px; border-radius: 10px;">
+                    <h4 style="color: #dc3545; margin-bottom: 15px;">Statistiques de ${player.name}</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #17a2b8;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Transformations</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #17a2b8;">${transfoReussies}/${transfos.length}</div>
+                            <div style="font-size: 14px; color: ${transfoPct >= 70 ? '#28a745' : transfoPct >= 50 ? '#ffc107' : '#dc3545'}; font-weight: bold;">${transfoPct}%</div>
+                        </div>
+                        <div style="background: white; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">Pénalités</div>
+                            <div style="font-size: 24px; font-weight: bold; color: #ffc107;">${penaliteReussies}/${penalites.length}</div>
+                            <div style="font-size: 14px; color: ${penalitePct >= 70 ? '#28a745' : penalitePct >= 50 ? '#ffc107' : '#dc3545'}; font-weight: bold;">${penalitePct}%</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function undoLastKick() {
+            if (!currentMatch.postMatchStats.kicks || currentMatch.postMatchStats.kicks.length === 0) {
+                alert('Aucun tir à annuler');
+                return;
+            }
+            
+            currentMatch.postMatchStats.kicks.pop();
+            renderKicksOnField();
+        }
+
+        function savePostMatchStats() {
+            currentMatch.postMatchStats.touchesRatees = parseInt(document.getElementById('touchesRatees').value) || 0;
+            currentMatch.postMatchStats.enAvants = parseInt(document.getElementById('enAvants').value) || 0;
+            
+            // CORRIGÉ: Mettre à jour les stats globales des joueurs immédiatement
+            if (currentMatch.finished && currentMatch.postMatchStats.tackles) {
+                // Retirer les anciennes stats si elles ont déjà été sauvegardées
+                if (currentMatch.tacklesAlreadySaved && currentMatch.previousTackles) {
+                    currentMatch.players.forEach(matchPlayer => {
+                        const player = players.find(p => p.id === matchPlayer.id);
+                        if (player && currentMatch.previousTackles[matchPlayer.id]) {
+                            const oldTackles = currentMatch.previousTackles[matchPlayer.id];
+                            player.stats.plaquages.reussis -= oldTackles.reussis || 0;
+                            player.stats.plaquages.rates -= oldTackles.rates || 0;
+                            
+                            if (player.stats.plaquages.reussis < 0) player.stats.plaquages.reussis = 0;
+                            if (player.stats.plaquages.rates < 0) player.stats.plaquages.rates = 0;
+                        }
+                    });
+                }
+                
+                // Ajouter les nouvelles stats de plaquages
+                currentMatch.previousTackles = {};
+                currentMatch.players.forEach(matchPlayer => {
+                    const player = players.find(p => p.id === matchPlayer.id);
+                    if (player && currentMatch.postMatchStats.tackles[matchPlayer.id]) {
+                        const tackles = currentMatch.postMatchStats.tackles[matchPlayer.id];
+                        
+                        currentMatch.previousTackles[matchPlayer.id] = {
+                            reussis: tackles.reussis,
+                            rates: tackles.rates
+                        };
+                        
+                        player.stats.plaquages.reussis += tackles.reussis;
+                        player.stats.plaquages.rates += tackles.rates;
+                    }
+                });
+                
+                currentMatch.tacklesAlreadySaved = true;
+            }
+            
+            saveMatchData();
+            saveData(); // IMPORTANT: Sauvegarder les stats globales
+            
+            alert('✅ Statistiques sauvegardées et stats individuelles mises à jour !');
+            closePostMatchStats();
+            
+            if (currentMatch.finished) {
+                showDebrief();
+            }
+        }
+
+        // Export/Import
         function exportData() {
             const data = {
                 players: players,
                 composition: composition,
                 matches: matches,
                 exportDate: new Date().toISOString(),
-                version: '1.0'
+                version: '1.1'
             };
             
             const dataStr = JSON.stringify(data, null, 2);
@@ -2027,12 +3326,10 @@
                 try {
                     const data = JSON.parse(e.target.result);
                     
-                    // Validation basique
                     if (!data.players || !Array.isArray(data.players)) {
                         throw new Error('Format de données invalide');
                     }
                     
-                    // Confirmation avant d'écraser les données
                     const confirm = window.confirm(
                         '⚠️ Attention ! L\'importation va remplacer toutes vos données actuelles.\n\n' +
                         `Données à importer:\n` +
@@ -2042,26 +3339,19 @@
                     );
                     
                     if (!confirm) {
-                        event.target.value = ''; // Reset file input
+                        event.target.value = '';
                         return;
                     }
                     
-                    // Importer les données
                     players = data.players || [];
                     composition = data.composition || {};
                     matches = data.matches || [];
                     
-                    // Sauvegarder
                     saveData();
-                    
-                    // Rafraîchir l'affichage
                     renderPlayersStats();
-                    renderComposition();
                     renderMatches();
                     
                     alert('✅ Données importées avec succès !');
-                    
-                    // Reset file input
                     event.target.value = '';
                     
                 } catch (error) {
@@ -2086,22 +3376,16 @@
             
             if (!confirm) return;
             
-            // Double confirmation
             const confirmAgain = window.confirm('Confirmez-vous vraiment la suppression totale de toutes les données ?');
             
             if (!confirmAgain) return;
             
-            // Tout supprimer
             players = [];
             composition = {};
             matches = [];
             
-            // Sauvegarder
             saveData();
-            
-            // Rafraîchir l'affichage
             renderPlayersStats();
-            renderComposition();
             renderMatches();
             
             alert('✅ Toutes les données ont été supprimées.');
@@ -2111,9 +3395,28 @@
         window.onload = function() {
             loadData();
             renderPlayersStats();
-            renderComposition();
             renderMatches();
         };
     </script>
+    <script type="module">
+  // Import the functions you need from the SDKs you need
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  // TODO: Add SDKs for Firebase products that you want to use
+  // https://firebase.google.com/docs/web/setup#available-libraries
+
+  // Your web app's Firebase configuration
+  const firebaseConfig = {
+    apiKey: "AIzaSyD2WRkyiOcGOUzteqq6W2u7XEmIjo29Tdk",
+    authDomain: "statsrugby-e6fee.firebaseapp.com",
+    databaseURL: "https://statsrugby-e6fee-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "statsrugby-e6fee",
+    storageBucket: "statsrugby-e6fee.firebasestorage.app",
+    messagingSenderId: "1081674752859",
+    appId: "1:1081674752859:web:e9cd7b8df47943fed1b07e"
+  };
+
+  // Initialize Firebase
+  const app = initializeApp(firebaseConfig);
+</script>
 </body>
 </html>
